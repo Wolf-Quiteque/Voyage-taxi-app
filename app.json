@@ -3,6 +3,7 @@
     "name": "Voyage-taxi-app",
     "slug": "Voyage-taxi-app",
     "version": "1.0.0",
+    "owner": "mq3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
