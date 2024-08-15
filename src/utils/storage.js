@@ -18,18 +18,19 @@ export const saveUserInfo = async (userInfo) => {
     const response = await api.post('/users', userInfo);
     
     // If API call is successful, also save to local storage
-    if (response.status200 || response.status === 201) {
+    if (response.status === 200 || response.status === 201) {
       const jsonValue = JSON.stringify(userInfo);
       await AsyncStorage.setItem('@user_info', jsonValue);
-      return true;
-    } else {
-      console.error('Error saving user info to API:', response.status);
-      return false;
+      return {success:true};
+    }else {
+      // Handle API response when user already exists or other errors
+      return { success: false, message: response.data.message || 'Failed to save user info' };
     }
-  } catch (e) {
-    console.error('Error saving user info:', e);
-    return false;
-  }
+    } catch (e) {
+      // Handle network or other errors
+      console.error('Error saving user info:', e);
+      return { success: false, message: e.message };
+    }
 };
 
 export const getUserInfo = async () => {

@@ -19,6 +19,8 @@ import { saveUserInfo } from '../utils/storage';
 import {Circle} from 'react-native-animated-spinkit';
 const { width, height } = Dimensions.get('window');
 
+import Toast from 'react-native-toast-message';
+
 const SignUpScreen = ({navigation}) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -42,13 +44,19 @@ const SignUpScreen = ({navigation}) => {
   const handleSignUp = async () => {
     setLoading(true)
     const userInfo = { name, email, phone, password };
-    const success = await saveUserInfo(userInfo);
-    if (success) {
-      // Navigate to the next screen or show a success message
-      console.log('Sign up successful!');
+    const reaponse = await saveUserInfo(userInfo);
+    if (response.success) {
+     Toast.show({
+       type: 'success',
+       text1: 'Registration Complete',
+       text2: 'Conta criado com sucesso '
+     });
     } else {
-      // Show an error message
-      console.log('Sign up failed. Please try again.');
+  Toast.show({
+    type: 'error',
+    text1: 'Try again',
+    text2: response.message
+  });
     }
   };
 
