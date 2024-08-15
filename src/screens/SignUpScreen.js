@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,125 +8,182 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ImageBackground,
+  Animated,
+  Dimensions,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { colors } from '../styles/colors';
 import CustomButton from '../components/CustomButton';
 import { saveUserInfo } from '../utils/storage';
+
+const { width, height } = Dimensions.get('window');
 
 const SignUpScreen = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [showForm, setShowForm] = useState(false);
 
-  const handleSignUp = () => {
+  const slideAnim = useRef(new Animated.Value(height)).current;
+
+  const handleGetStarted = () => {
+    setShowForm(true);
+    Animated.spring(slideAnim, {
+      toValue: 0,
+      useNativeDriver: true,
+      tension: 20,
+      friction: 7,
+    }).start();
+  };
+
+  const handleSignUp = async () => {
     const userInfo = { name, email, phone, password };
-    saveUserInfo(userInfo);
-    // Navigate to the next screen or show a success message
+    const success = await saveUserInfo(userInfo);
+    if (success) {
+      // Navigate to the next screen or show a success message
+      console.log('Sign up successful!');
+    } else {
+      // Show an error message
+      console.log('Sign up failed. Please try again.');
+    }
   };
 
   return (
-    <LinearGradient
-      colors={[colors.primary, colors.accent]}
-      style={styles.container}
+    <ImageBackground
+      source={{ uri: 'https://picsum.photos/id/1015/1000/1000' }}
+      style={styles.backgroundImage}
     >
       <StatusBar style="light" />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoid}
-      >
-        <ScrollView contentContainerStyle={styles.scrollView}>
-          <View style={styles.formContainer}>
-            <Text style={styles.title}>Welcome to LuxeRide</Text>
-            <Text style={styles.subtitle}>Your premium taxi experience</Text>
+      <View style={styles.overlay}>
+        <Text style={styles.title}>Voyage</Text>
+        <Text style={styles.subtitle}>Your journey begins here</Text>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Full Name"
-              placeholderTextColor={colors.text + '80'}
-              value={name}
-              onChangeText={setName}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor={colors.text + '80'}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Phone Number"
-              placeholderTextColor={colors.text + '80'}
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor={colors.text + '80'}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
+        {!showForm && (
+          <TouchableOpacity
+            style={styles.getStartedButton}
+            onPress={handleGetStarted}
+          >
+            <Text style={styles.getStartedText}>Let's Get Started</Text>
+          </TouchableOpacity>
+        )}
 
-            <CustomButton
-              title="Sign Up"
-              onPress={handleSignUp}
-              style={styles.signUpButton}
-            />
+        <Animated.View
+          style={[
+            styles.formContainer,
+            { transform: [{ translateY: slideAnim }] },
+          ]}
+        >
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          >
+            <ScrollView contentContainerStyle={styles.scrollView}>
+              <TextInput
+                style={styles.input}
+                placeholder="Full Name"
+                placeholderTextColor={colors.text + '80'}
+                value={name}
+                onChangeText={setName}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Email"
+                placeholderTextColor={colors.text + '80'}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Phone Number"
+                placeholderTextColor={colors.text + '80'}
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor={colors.text + '80'}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
 
-            <TouchableOpacity style={styles.loginLink}>
-              <Text style={styles.loginText}>
-                Already have an account? Log In
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </LinearGradient>
+              <CustomButton
+                title="Sign Up"
+                onPress={handleSignUp}
+                style={styles.signUpButton}
+              />
+
+              <TouchableOpacity style={styles.loginLink}>
+                <Text style={styles.loginText}>
+                  Already have an account? Log In
+                </Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </Animated.View>
+      </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  backgroundImage: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
-  keyboardAvoid: {
+  overlay: {
     flex: 1,
-  },
-  scrollView: {
-    flexGrow: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
-  },
-  formContainer: {
-    backgroundColor: colors.background,
-    borderRadius: 20,
-    padding: 30,
-    marginHorizontal: 20,
-    elevation: 5,
-    shadowColor: colors.text,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 28,
+    fontSize: 48,
     fontWeight: 'bold',
-    color: colors.text,
+    color: colors.background,
     marginBottom: 10,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: 16,
-    color: colors.text + 'B3',
+    fontSize: 18,
+    color: colors.background,
     marginBottom: 30,
     textAlign: 'center',
+  },
+  getStartedButton: {
+    position: 'absolute',
+    bottom: 50,
+    right: 30,
+    backgroundColor: colors.primary,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 30,
+  },
+  getStartedText: {
+    color: colors.background,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  formContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: colors.background,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 30,
+    paddingTop: 50,
+    height: height * 0.75,
+  },
+  scrollView: {
+    flexGrow: 1,
   },
   input: {
     backgroundColor: colors.background,
@@ -140,6 +197,7 @@ const styles = StyleSheet.create({
   },
   signUpButton: {
     marginTop: 10,
+    backgroundColor: colors.primary,
   },
   loginLink: {
     marginTop: 20,

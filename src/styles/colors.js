@@ -1,7 +1,7 @@
 export const colors = {
-  primary: '#5DADE2',
-  accent: '#58D68D',
-  background: '#F2F3F4',
-  text: '#2C3E50',
-  secondaryAccent: '#F7DC6F',
+  primary: '#FF4136', // A vibrant red
+  accent: '#FF725C', // A lighter red for accents
+  background: '#FFF5F5', // Very light red tint for background
+  text: '#2D3748', // Dark gray for text
+  secondaryAccent: '#FFD700', // Gold for secondary accent
 };
