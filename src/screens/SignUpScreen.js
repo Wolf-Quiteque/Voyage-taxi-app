@@ -16,7 +16,7 @@ import { StatusBar } from 'expo-status-bar';
 import { colors } from '../styles/colors';
 import CustomButton from '../components/CustomButton';
 import { saveUserInfo } from '../utils/storage';
-import {Swing} from 'react-native-animated-spinkit';
+import {Circle} from 'react-native-animated-spinkit';
 const { width, height } = Dimensions.get('window');
 
 const SignUpScreen = ({navigation}) => {
@@ -113,7 +113,7 @@ const SignUpScreen = ({navigation}) => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              {loading? (<Swing size={48} color="#FFF5F5"/>):(  <CustomButton
+              {loading? (  <Circle size={48} color="#000000" />):(  <CustomButton
                 title="Sign Up"
                 onPress={handleSignUp}
                 style={styles.signUpButton}
