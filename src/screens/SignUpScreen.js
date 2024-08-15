@@ -46,12 +46,14 @@ const SignUpScreen = ({navigation}) => {
     const userInfo = { name, email, phone, password };
     const reaponse = await saveUserInfo(userInfo);
     if (response.success) {
+      setLoading(false)
      Toast.show({
        type: 'success',
        text1: 'Registration Complete',
        text2: 'Conta criado com sucesso '
      });
     } else {
+      setLoading(false)
   Toast.show({
     type: 'error',
     text1: 'Try again',
