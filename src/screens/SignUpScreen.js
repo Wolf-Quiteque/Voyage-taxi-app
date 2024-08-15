@@ -16,13 +16,14 @@ import { StatusBar } from 'expo-status-bar';
 import { colors } from '../styles/colors';
 import CustomButton from '../components/CustomButton';
 import { saveUserInfo } from '../utils/storage';
-
+import {Swing} from 'react-native-animated-spinkit';
 const { width, height } = Dimensions.get('window');
 
 const SignUpScreen = ({navigation}) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+    const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [showForm, setShowForm] = useState(false);
 
@@ -39,6 +40,7 @@ const SignUpScreen = ({navigation}) => {
   };
 
   const handleSignUp = async () => {
+    setLoading(true)
     const userInfo = { name, email, phone, password };
     const success = await saveUserInfo(userInfo);
     if (success) {
@@ -111,13 +113,14 @@ const SignUpScreen = ({navigation}) => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-
-              <CustomButton
+              {loading? (<Swing size={48} color="#FFF5F5"/>):(  <CustomButton
                 title="Sign Up"
                 onPress={handleSignUp}
                 style={styles.signUpButton}
               />
+)}
 
+            
              <TouchableOpacity 
                 style={styles.loginLink}
                 onPress={() => navigation.navigate('Login')}
