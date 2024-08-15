@@ -44,7 +44,7 @@ const SignUpScreen = ({navigation}) => {
   const handleSignUp = async () => {
     setLoading(true)
     const userInfo = { name, email, phone, password };
-    const reaponse = await saveUserInfo(userInfo);
+    const response = await saveUserInfo(userInfo);
     if (response.success) {
       setLoading(false)
      Toast.show({
