@@ -113,11 +113,16 @@ const SignUpScreen = ({navigation}) => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-              {loading? (  <Circle size={48} color="#000000" />):(  <CustomButton
-                title="Sign Up"
-                onPress={handleSignUp}
-                style={styles.signUpButton}
-              />
+  {loading ? (
+  <View style={styles.spinnerContainer}>
+    <Circle size={48} color={colors.primary} />
+  </View>
+) : (
+  <CustomButton
+    title="Sign Up"
+    onPress={handleSignUp}
+    style={styles.signUpButton}
+  />
 )}
 
             
@@ -155,7 +160,11 @@ const styles = StyleSheet.create({
     color: colors.background,
     marginBottom: 10,
     textAlign: 'center',
-  },
+  },spinnerContainer: {
+  flex: 1, // Take up all available space
+  justifyContent: 'center',
+  alignItems: 'center',
+},
   subtitle: {
     fontSize: 18,
     color: colors.background,
