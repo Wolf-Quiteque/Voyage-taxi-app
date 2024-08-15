@@ -18,7 +18,7 @@ export const saveUserInfo = async (userInfo) => {
     const response = await api.post('/users', userInfo);
     
     // If API call is successful, also save to local storage
-    if (response.status === 200 || response.status === 201) {
+    if (response.success) {
       const jsonValue = JSON.stringify(userInfo);
       await AsyncStorage.setItem('@user_info', jsonValue);
       return {success:true};
