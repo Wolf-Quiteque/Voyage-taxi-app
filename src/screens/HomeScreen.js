@@ -14,7 +14,7 @@ import { StatusBar } from 'expo-status-bar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../styles/colors';
 import axios from 'axios';
-
+import * as Location from 'expo-location';
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width / 2 - 30;
 
@@ -22,7 +22,18 @@ const API_KEY = 'AIzaSyAbKqp4cMvQO-8uDtqC7KoYslkB4uB3dLs';
 
 const HomeScreen = ({ navigation }) => {
   const [places, setPlaces] = useState([]);
+useEffect(() => {
+  (async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      console.error('Permission to access location was denied');
+      return;
+    }
 
+    let location = await Location.getCurrentPositionAsync({});
+    fetchPlaces(location.coords.latitude, location.coords.longitude);
+  })();
+}, []);
   useEffect(() => {
     fetchPlaces();
   }, []);
