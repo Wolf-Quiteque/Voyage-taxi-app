@@ -15,6 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../styles/colors';
 import axios from 'axios';
 import * as Location from 'expo-location';
+
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width / 2 - 30;
 
@@ -22,30 +23,30 @@ const API_KEY = 'AIzaSyAbKqp4cMvQO-8uDtqC7KoYslkB4uB3dLs';
 
 const HomeScreen = ({ navigation }) => {
   const [places, setPlaces] = useState([]);
-useEffect(() => {
-  (async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      console.error('Permission to access location was denied');
-      return;
-    }
+  const [location, setLocation] = useState(null);
 
-    let location = await Location.getCurrentPositionAsync({});
-    fetchPlaces(location.coords.latitude, location.coords.longitude);
-  })();
-}, []);
   useEffect(() => {
-    fetchPlaces();
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.error('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      fetchPlaces(location.coords.latitude, location.coords.longitude);
+    })();
   }, []);
 
-  const fetchPlaces = async () => {
+  const fetchPlaces = async (latitude, longitude) => {
     try {
       const types = ['restaurant', 'lodging', 'shopping_mall'];
       const allPlaces = [];
 
       for (const type of types) {
         const response = await axios.get(
-          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=40.7128,-74.0060&radius=1500&type=${type}&key=${API_KEY}`
+          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=${type}&key=${API_KEY}`
         );
         allPlaces.push(...response.data.results.slice(0, 2));
       }
@@ -58,10 +59,18 @@ useEffect(() => {
 
   const renderPlaceCard = ({ item }) => (
     <TouchableOpacity style={styles.card}>
-      <Image
-        source={{ uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photos[0].photo_reference}&key=${API_KEY}` }}
-        style={styles.cardImage}
-      />
+      {item.photos && item.photos.length > 0 ? (
+        <Image
+          source={{
+            uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photos[0].photo_reference}&key=${API_KEY}`,
+          }}
+          style={styles.cardImage}
+        />
+      ) : (
+        <View style={[styles.cardImage, styles.noImage]}>
+          <Text style={styles.noImageText}>No Image Available</Text>
+        </View>
+      )}
       <View style={styles.cardContent}>
         <Text style={styles.cardTitle}>{item.name}</Text>
         <Text style={styles.cardDescription} numberOfLines={2}>
@@ -145,6 +154,14 @@ const styles = StyleSheet.create({
   cardImage: {
     width: '100%',
     height: 120,
+  },
+  noImage: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.primary + '33',
+  },
+  noImageText: {
+    color: colors.text + '99',
   },
   cardContent: {
     padding: 10,
