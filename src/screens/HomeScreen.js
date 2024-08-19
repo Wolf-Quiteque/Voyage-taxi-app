@@ -163,6 +163,7 @@ const HomeScreen = ({ navigation }) => {
             <TextInput style={styles.input} placeholder="Pick-Up Location" placeholderTextColor="#fff" />
             <TextInput style={styles.input} placeholder="Drop-Off Location" placeholderTextColor="#fff" />
             <TouchableOpacity style={styles.scheduleButton}>
+            SCHEDULE
             </TouchableOpacity>
             <TouchableOpacity onPress={handleCancelSchedule} style={styles.cancelButton}>
               <Icon name="close" size={24} color="#fff" />
