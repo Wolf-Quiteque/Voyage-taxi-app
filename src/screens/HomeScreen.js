@@ -62,8 +62,7 @@ const onChangeTime = (event, selectedTime) => {
       fetchPlaces(location.coords.latitude, location.coords.longitude);
     })();
   }, []);
-
-const fetchPlaces = async (latitude, longitude, pageToken = null) => {
+const fetchPlacesWithDelay = async (latitude, longitude, pageToken = null) => {
   if (loading) return;
   setLoading(true);
 
@@ -82,10 +81,9 @@ const fetchPlaces = async (latitude, longitude, pageToken = null) => {
       newPlaces.push(...response.data.results);
 
       if (response.data.next_page_token) {
-        // Add a delay before setting the next page token
-        setTimeout(() => {
-          setNextPageToken(response.data.next_page_token);
-        }, 2000); // 2 seconds delay
+        setNextPageToken(response.data.next_page_token);
+        // Delay before making the next request with the new page token
+        await new Promise(resolve => setTimeout(resolve, 2000)); // 2 seconds delay
       } else {
         setNextPageToken(null);
       }
@@ -103,7 +101,7 @@ const fetchPlaces = async (latitude, longitude, pageToken = null) => {
 };
   const loadMorePlaces = () => {
     if (nextPageToken && !loading) {
-      fetchPlaces(location.coords.latitude, location.coords.longitude, nextPageToken);
+      fetchPlacesWithDelay(location.coords.latitude, location.coords.longitude, nextPageToken);
     }
   };
 
