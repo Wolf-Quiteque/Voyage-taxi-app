@@ -188,7 +188,7 @@ const onChangeTime = (event, selectedTime) => {
 )}
 
 <TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.input}>
-  <Text style={{ color: '#fff' }}>{time.toLocaleTimeString()}</Text>
+  <Text style={{ color: '#000' }}>{time.toLocaleTimeString()}</Text>
 </TouchableOpacity>
 {showTimePicker && (
   <DateTimePicker
@@ -198,12 +198,12 @@ const onChangeTime = (event, selectedTime) => {
     onChange={onChangeTime}
   />
 )}
-            <TextInput style={styles.input} placeholder="Drop-Off Location" placeholderTextColor="#fff" />
+            <TextInput style={styles.input} placeholder="Pick up/Drop-Off Location" placeholderTextColor="#fff" />
             <TouchableOpacity style={styles.scheduleButton}>
               <Text style={styles.scheduleButtonText}>Schedule</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleCancelSchedule} style={styles.cancelButton}>
-              <Icon name="close" size={24} color="#fff" />
+              <Icon name="close" size={24} color="#000" />
             </TouchableOpacity>
           </>
         ) : (
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 20,
-    backgroundColor: 'rgba(200, 200, 200, 0.8)',
+    backgroundColor: '#fff',
   },
   navButton: {
     alignItems: 'center',
