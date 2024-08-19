@@ -3,11 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  ImageBackground,
   FlatList,
   TouchableOpacity,
   Image,
   Dimensions,
+  SafeAreaView,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { StatusBar } from 'expo-status-bar';
@@ -16,10 +16,10 @@ import { colors } from '../styles/colors';
 import axios from 'axios';
 import * as Location from 'expo-location';
 
+const GOOGLE_PLACES_API_KEY = "AIzaSyAbKqp4cMvQO-8uDtqC7KoYslkB4uB3dLs"
+
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width / 2 - 30;
-
-const API_KEY = 'AIzaSyAbKqp4cMvQO-8uDtqC7KoYslkB4uB3dLs';
 
 const HomeScreen = ({ navigation }) => {
   const [places, setPlaces] = useState([]);
@@ -46,7 +46,7 @@ const HomeScreen = ({ navigation }) => {
 
       for (const type of types) {
         const response = await axios.get(
-          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=${type}&key=${API_KEY}`
+          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=${type}&key=${GOOGLE_PLACES_API_KEY}`
         );
         allPlaces.push(...response.data.results.slice(0, 2));
       }
@@ -62,7 +62,7 @@ const HomeScreen = ({ navigation }) => {
       {item.photos && item.photos.length > 0 ? (
         <Image
           source={{
-            uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photos[0].photo_reference}&key=${API_KEY}`,
+            uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${item.photos[0].photo_reference}&key=${GOOGLE_PLACES_API_KEY}`,
           }}
           style={styles.cardImage}
         />
@@ -81,61 +81,56 @@ const HomeScreen = ({ navigation }) => {
   );
 
   return (
-    <ImageBackground
-      source={{ uri: 'https://picsum.photos/id/1015/1000/1000' }}
-      style={styles.backgroundImage}
-    >
-      <StatusBar style="light" />
-      <View style={styles.overlay}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" />
+      <View style={styles.header}>
         <Text style={styles.title}>Discover</Text>
         <Text style={styles.subtitle}>Explore nearby places</Text>
-
-        <FlatList
-          data={places}
-          renderItem={renderPlaceCard}
-          keyExtractor={(item) => item.place_id}
-          numColumns={2}
-          contentContainerStyle={styles.gridContainer}
-        />
-
-        <BlurView style={styles.bottomNav} blurType="light" blurAmount={10}>
-          <TouchableOpacity style={styles.navButton}>
-            <Icon name="calendar-clock" size={24} color={colors.primary} />
-            <Text style={styles.navButtonText}>Schedule Ride</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.navButton, styles.primaryButton]}>
-            <Icon name="car" size={24} color={colors.background} />
-            <Text style={[styles.navButtonText, styles.primaryButtonText]}>Voyage Now</Text>
-          </TouchableOpacity>
-        </BlurView>
       </View>
-    </ImageBackground>
+
+      <FlatList
+        data={places}
+        renderItem={renderPlaceCard}
+        keyExtractor={(item) => item.place_id}
+        numColumns={2}
+        contentContainerStyle={styles.gridContainer}
+      />
+
+      <BlurView intensity={80} tint="light" style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navButton}>
+          <Icon name="calendar-clock" size={24} color={colors.primary} />
+          <Text style={styles.navButtonText}>Schedule Ride</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.navButton, styles.primaryButton]}>
+          <Icon name="car" size={24} color={colors.background} />
+          <Text style={[styles.navButtonText, styles.primaryButtonText]}>Voyage Now</Text>
+        </TouchableOpacity>
+      </BlurView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  backgroundImage: {
+  container: {
     flex: 1,
-    width: '100%',
-    height: '100%',
+    backgroundColor: 'white',
   },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  header: {
     padding: 20,
+    paddingTop: 40,
   },
   title: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: colors.background,
-    marginTop: 40,
+    color: colors.text,
   },
   subtitle: {
     fontSize: 18,
-    color: colors.background,
-    marginBottom: 20,
+    color: colors.text,
+    marginTop: 5,
   },
   gridContainer: {
+    padding: 15,
     paddingBottom: 100,
   },
   card: {
@@ -143,7 +138,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderRadius: 15,
     marginBottom: 20,
-    marginHorizontal: 10,
+    marginHorizontal: 7.5,
     overflow: 'hidden',
     elevation: 5,
     shadowColor: '#000',
@@ -186,6 +181,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingBottom: 20,
+    backgroundColor: 'rgba(200, 200, 200, 0.8)', // Light grey color
   },
   navButton: {
     alignItems: 'center',
