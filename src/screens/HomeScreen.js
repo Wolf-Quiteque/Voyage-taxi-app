@@ -157,13 +157,12 @@ const HomeScreen = ({ navigation }) => {
       <Animated.View style={[styles.bottomNav, { height: animatedHeight }]}>
         {isScheduling ? (
           <>
-            <Text style={styles.scheduleTitle}>Schedule Ride</Text>
+            <Icon name="calendar-clock" size={24} color={colors.primary} style={styles.scheduleTitle}/>
             <TextInput style={styles.input} placeholder="Date" placeholderTextColor="#fff" />
             <TextInput style={styles.input} placeholder="Time" placeholderTextColor="#fff" />
             <TextInput style={styles.input} placeholder="Pick-Up Location" placeholderTextColor="#fff" />
             <TextInput style={styles.input} placeholder="Drop-Off Location" placeholderTextColor="#fff" />
             <TouchableOpacity style={styles.scheduleButton}>
-              <Text style={styles.scheduleButtonText}>Schedule</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleCancelSchedule} style={styles.cancelButton}>
               <Icon name="close" size={24} color="#fff" />
