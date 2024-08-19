@@ -95,6 +95,7 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handleCancelSchedule = () => {
+    setIsScheduling(false);
     Animated.timing(animatedHeight, {
       toValue: height * 0.15,
       duration: 500,
