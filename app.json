@@ -36,11 +36,21 @@
       "url": "https://u.expo.dev/8e08dc4e-ca18-4ca7-b7ec-697eb16f0c49"
     },
     "plugins": [
-      "expo-font",[
-      "expo-location",
+      "expo-font",
+      [
+        "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
-    ]]
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"
+          ]
+        }
+      ]
+    ]
   }
 }
