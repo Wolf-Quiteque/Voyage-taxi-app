@@ -106,7 +106,7 @@ const onChangeTime = (event, selectedTime) => {
     setIsScheduling(true);
     Animated.timing(animatedHeight, {
       toValue: height * 0.7, // Adjust the height as needed
-      duration: 500,
+      duration: 400,
       useNativeDriver: false,
     }).start();
   };
@@ -198,7 +198,7 @@ const onChangeTime = (event, selectedTime) => {
     onChange={onChangeTime}
   />
 )}
-            <TextInput style={styles.input} placeholder="Pick up/Drop-Off Location" placeholderTextColor="#fff" />
+            <TextInput style={styles.input} placeholder="Pick up / Drop-Off Location" placeholderTextColor="#fff" />
             <TouchableOpacity style={styles.scheduleButton}>
               <Text style={styles.scheduleButtonText}>Schedule</Text>
             </TouchableOpacity>
