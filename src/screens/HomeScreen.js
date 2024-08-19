@@ -24,7 +24,7 @@ const GOOGLE_PLACES_API_KEY = "AIzaSyAbKqp4cMvQO-8uDtqC7KoYslkB4uB3dLs"
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width / 2 - 30;
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ navigation , route}) => {
   const [places, setPlaces] = useState([]);
   const [location, setLocation] = useState(null);
   const [nextPageToken, setNextPageToken] = useState(null);
@@ -47,7 +47,23 @@ const onChangeTime = (event, selectedTime) => {
   setTime(currentTime);
 };
 
+useEffect(() => {
+  if (route.params?.pickupLocation) {
+    // Handle pickup location data
+    console.log('Pickup Location:', route.params.pickupLocation);
+  }
+
+  if (route.params?.dropoffLocation) {
+    // Handle dropoff location data
+    console.log('Dropoff Location:', route.params.dropoffLocation);
+  }
+}, [route.params?.pickupLocation, route.params?.dropoffLocation]);
+
   const animatedHeight = useRef(new Animated.Value(height * 0.15)).current;
+  
+  const handleSetLocation = () => {
+  navigation.navigate('MapScreen');
+};
 
   useEffect(() => {
     (async () => {
@@ -198,7 +214,15 @@ const onChangeTime = (event, selectedTime) => {
     onChange={onChangeTime}
   />
 )}
-            <TextInput style={styles.input} placeholder="Pick up / Drop-Off Location" placeholderTextColor="#fff" />
+<TouchableOpacity onPress={() => { /* Handle Press */ }}>
+  <TextInput
+    style={styles.input}
+    placeholder="Pick up / Drop-Off Location"
+    placeholderTextColor="#fff"
+    editable={false} // Make it read-only if you don't want direct input
+  />
+</TouchableOpacity>
+            
             <TouchableOpacity style={styles.scheduleButton}>
               <Text style={styles.scheduleButtonText}>Schedule</Text>
             </TouchableOpacity>
