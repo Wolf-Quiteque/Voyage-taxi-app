@@ -219,7 +219,7 @@ useEffect(() => {
     style={styles.input}
     placeholder="Pick up / Drop-Off Location"
     placeholderTextColor="#fff"
-    editable={false} // Make it read-only if you don't want direct input
+    editable={false}
   />
 </TouchableOpacity>
             
