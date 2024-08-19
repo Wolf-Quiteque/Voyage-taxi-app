@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Animated,
+  Alert,
   TextInput,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
@@ -19,7 +20,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../styles/colors';
 import axios from 'axios';
 import * as Location from 'expo-location';
-const GOOGLE_PLACES_API_KEY = "AIzaSyBnr2f82PpIKH20FNEtRei5iVUCXxozoNw"
+const GOOGLE_PLACES_API_KEY = "AIzaSyAbKqp4cMvQO-8uDtqC7KoYslkB4uB3dLs"
 
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width / 2 - 30;
@@ -54,7 +55,24 @@ const onChangeTime = (event, selectedTime) => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         console.error('Permission to access location was denied');
+        Alert.alert(
+  'Confirm',
+  'Are you sure you want to proceed?',
+  [
+    {
+      text: 'Cancel',
+      onPress: () => console.log('Cancel Pressed'),
+      style: 'cancel',
+    },
+    {
+      text: 'OK',
+      onPress: () => console.log('OK Pressed'),
+    },
+  ],
+  { cancelable: false }
+);
         return;
+        
       }
 
       let location = await Location.getCurrentPositionAsync({});
