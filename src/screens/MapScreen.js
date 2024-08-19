@@ -5,6 +5,8 @@ import * as Location from 'expo-location';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 const { width, height } = Dimensions.get('window');
+const GOOGLE_PLACES_API_KEY = "AIzaSyAbKqp4cMvQO-8uDtqC7KoYslkB4uB3dLs"
+
 
 const MapScreen = ({ navigation }) => {
   const [pickupLocation, setPickupLocation] = useState(null);
@@ -72,7 +74,7 @@ const MapScreen = ({ navigation }) => {
           handleLocationSelect(details, true);
         }}
         query={{
-          key: 'YOUR_GOOGLE_PLACES_API_KEY',
+          key: GOOGLE_PLACES_API_KEY,
           language: 'en',
         }}
         styles={styles.autocomplete}
@@ -85,7 +87,7 @@ const MapScreen = ({ navigation }) => {
           handleLocationSelect(details, false);
         }}
         query={{
-          key: 'YOUR_GOOGLE_PLACES_API_KEY',
+          key: GOOGLE_PLACES_API_KEY
           language: 'en',
         }}
         styles={[styles.autocomplete, { top: 110 }]}
