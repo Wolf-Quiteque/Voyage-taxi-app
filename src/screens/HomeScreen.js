@@ -100,9 +100,7 @@ const HomeScreen = ({ navigation }) => {
       toValue: height * 0.15,
       duration: 500,
       useNativeDriver: false,
-    }).start(() => {
-      setIsScheduling(false);
-    });
+    }).start();
   };
 
   const renderPlaceCard = ({ item }) => (
@@ -251,6 +249,8 @@ const styles = StyleSheet.create({
   },
   bottomNav: {
     position: 'absolute',
+    borderTopLeftRadius: 30, 
+    borderTopRightRadius: 30, 
     bottom: 0,
     left: 0,
     right: 0,
