@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../styles/colors';
 import axios from 'axios';
 import * as Location from 'expo-location';
-const GOOGLE_PLACES_API_KEY = "AIzaSyAbKqp4cMvQO-8uDtqC7KoYslkB4uB3dLs"
+const GOOGLE_PLACES_API_KEY = "AIzaSyBnr2f82PpIKH20FNEtRei5iVUCXxozoNw"
 
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width / 2 - 30;
@@ -62,7 +62,8 @@ const onChangeTime = (event, selectedTime) => {
       fetchPlaces(location.coords.latitude, location.coords.longitude);
     })();
   }, []);
-const fetchPlacesWithDelay = async (latitude, longitude, pageToken = null) => {
+
+const fetchPlaces = async (latitude, longitude, pageToken = null) => {
   if (loading) return;
   setLoading(true);
 
@@ -81,9 +82,10 @@ const fetchPlacesWithDelay = async (latitude, longitude, pageToken = null) => {
       newPlaces.push(...response.data.results);
 
       if (response.data.next_page_token) {
-        setNextPageToken(response.data.next_page_token);
-        // Delay before making the next request with the new page token
-        await new Promise(resolve => setTimeout(resolve, 2000)); // 2 seconds delay
+        // Add a delay before setting the next page token
+        setTimeout(() => {
+          setNextPageToken(response.data.next_page_token);
+        }, 2000); // 2 seconds delay
       } else {
         setNextPageToken(null);
       }
@@ -101,7 +103,7 @@ const fetchPlacesWithDelay = async (latitude, longitude, pageToken = null) => {
 };
   const loadMorePlaces = () => {
     if (nextPageToken && !loading) {
-      fetchPlacesWithDelay(location.coords.latitude, location.coords.longitude, nextPageToken);
+      fetchPlaces(location.coords.latitude, location.coords.longitude, nextPageToken);
     }
   };
 
