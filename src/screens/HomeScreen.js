@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
       scheduleTitle: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#fff',
+        color: '#000',
         marginBottom: 20,
       },
       input: {
