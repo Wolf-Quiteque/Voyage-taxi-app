@@ -119,7 +119,7 @@ const fetchPlaces = async (latitude, longitude, pageToken = null) => {
     setLoading(false);
   }
 };
-
+}
 const loadMorePlaces = () => {
   if (nextPageToken && !loading) {
     fetchPlaces(location.coords.latitude, location.coords.longitude, nextPageToken);
