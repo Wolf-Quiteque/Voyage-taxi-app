@@ -54,50 +54,45 @@ const MapScreen = ({ navigation }) => {
   const handleConfirm = () => {
     navigation.navigate('HomeScreen', { pickupLocation, dropoffLocation });
   };
-
-  return (
-    <View style={styles.container}>
-      {region && (
-        <MapView
-          style={styles.map}
-          initialRegion={region}
-        >
-          {pickupLocation && <Marker coordinate={pickupLocation} title="Pickup Location" />}
-          {dropoffLocation && <Marker coordinate={dropoffLocation} title="Dropoff Location" />}
-        </MapView>
-      )}
-
-      <GooglePlacesAutocomplete
-        placeholder="Search Pickup Location"
-        fetchDetails
-        onPress={(data, details = null) => {
-          handleLocationSelect(details, true);
-        }}
-        query={{
-          key: GOOGLE_PLACES_API_KEY,
-          language: 'en',
-        }}
-        styles={styles.autocomplete}
-      />
-
-      <GooglePlacesAutocomplete
-        placeholder="Search Dropoff Location"
-        fetchDetails
-        onPress={(data, details = null) => {
-          handleLocationSelect(details, false);
-        }}
-        query={{
-          key: GOOGLE_PLACES_API_KEY,
-          language: 'en',
-        }}
-        styles={[styles.autocomplete, { top: 110 }]}
-      />
-
-      <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-        <Text style={styles.confirmButtonText}>Confirm Locations</Text>
-      </TouchableOpacity>
+return (
+  <View style={styles.container}>
+    {region && (
+      <MapView
+        style={styles.map}
+        region={region}
+        showsUserLocation={true}
+      >
+        {pickupLocation && <Marker coordinate={pickupLocation} />}
+        {dropoffLocation && <Marker coordinate={dropoffLocation} />}
+      </MapView>
+    )}
+    <GooglePlacesAutocomplete
+      placeholder="Enter pickup location"
+      onPress={(data, details = null) => {
+        handleLocationSelect(details, true);
+      }}
+      query={{
+        key: GOOGLE_PLACES_API_KEY,
+        language: 'en',
+      }}
+      styles={styles.autocomplete}
+    />
+    <GooglePlacesAutocomplete
+      placeholder="Enter dropoff location"
+      onPress={(data, details = null) => {
+        handleLocationSelect(details, false);
+      }}
+      query={{
+        key:GOOGLE_PLACES_API_KEY,
+        language: 'en',
+      }}
+      styles={[styles.autocomplete, { top: 110 }]}
+    />
+    <View style={styles.confirmButton} onPress={handleConfirm}>
+      <Text style={styles.confirmButtonText}>Confirm Locations</Text>
     </View>
-  );
+  </View>
+);
 };
 
 const styles = StyleSheet.create({

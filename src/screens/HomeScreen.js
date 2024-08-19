@@ -47,22 +47,11 @@ const onChangeTime = (event, selectedTime) => {
   setTime(currentTime);
 };
 
-useEffect(() => {
-  if (route.params?.pickupLocation) {
-    // Handle pickup location data
-    console.log('Pickup Location:', route.params.pickupLocation);
-  }
-
-  if (route.params?.dropoffLocation) {
-    // Handle dropoff location data
-    console.log('Dropoff Location:', route.params.dropoffLocation);
-  }
-}, [route.params?.pickupLocation, route.params?.dropoffLocation]);
 
   const animatedHeight = useRef(new Animated.Value(height * 0.15)).current;
   
   const handleSetLocation = () => {
-  navigation.navigate('Map');
+  navigation.navigate('MapS');
 };
 
   useEffect(() => {
