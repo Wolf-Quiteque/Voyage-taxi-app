@@ -214,7 +214,7 @@ useEffect(() => {
     onChange={onChangeTime}
   />
 )}
-<TouchableOpacity onPress={() => { /* Handle Press */ }}>
+<TouchableOpacity onPress={handleSetLocation}>
   <TextInput
     style={styles.input}
     placeholder="Pick up / Drop-Off Location"
