@@ -24,7 +24,7 @@ const GOOGLE_PLACES_API_KEY = "AIzaSyAbKqp4cMvQO-8uDtqC7KoYslkB4uB3dLs"
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width / 2 - 30;
 
-const HomeScreen = ({ navigation , route}) => {
+const HomeScreen = ({ navigation }) => {
   const [places, setPlaces] = useState([]);
   const [location, setLocation] = useState(null);
   const [nextPageToken, setNextPageToken] = useState(null);
@@ -47,12 +47,7 @@ const onChangeTime = (event, selectedTime) => {
   setTime(currentTime);
 };
 
-
   const animatedHeight = useRef(new Animated.Value(height * 0.15)).current;
-  
-  const handleSetLocation = () => {
-  navigation.navigate('Map');
-};
 
   useEffect(() => {
     (async () => {
@@ -203,15 +198,7 @@ const onChangeTime = (event, selectedTime) => {
     onChange={onChangeTime}
   />
 )}
-<TouchableOpacity onPress={handleSetLocation}>
-  <TextInput
-    style={styles.input}
-    placeholder="Pick up / Drop-Off Location"
-    placeholderTextColor="#fff"
-    editable={false}
-  />
-</TouchableOpacity>
-            
+            <TextInput style={styles.input} placeholder="Pick up / Drop-Off Location" placeholderTextColor="#fff" />
             <TouchableOpacity style={styles.scheduleButton}>
               <Text style={styles.scheduleButtonText}>Schedule</Text>
             </TouchableOpacity>
