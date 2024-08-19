@@ -55,22 +55,7 @@ const onChangeTime = (event, selectedTime) => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         console.error('Permission to access location was denied');
-        Alert.alert(
-  'Confirm',
-  'Are you sure you want to proceed?',
-  [
-    {
-      text: 'Cancel',
-      onPress: () => console.log('Cancel Pressed'),
-      style: 'cancel',
-    },
-    {
-      text: 'OK',
-      onPress: () => console.log('OK Pressed'),
-    },
-  ],
-  { cancelable: false }
-);
+        
         return;
         
       }
@@ -82,48 +67,64 @@ const onChangeTime = (event, selectedTime) => {
   }, []);
 
 const fetchPlaces = async (latitude, longitude, pageToken = null) => {
+  if (loading) return;const fetchPlaces = async (latitude, longitude, pageToken = null) => {
   if (loading) return;
   setLoading(true);
 
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const maxRetries = 3;
+
   try {
-    const types = ['restaurant', 'lodging', 'shopping_mall'];
-    let newPlaces = [];
+    const types = ['restaurant', 'lodging', 'shopping_mall'].join('|');
+    let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=${types}&key=${GOOGLE_PLACES_API_KEY}`;
 
-    for (const type of types) {
-      let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=${type}&key=${GOOGLE_PLACES_API_KEY}`;
+    if (pageToken) {
+      url += `&pagetoken=${pageToken}`;
+    }
 
-      if (pageToken) {
-        url += `&pagetoken=${pageToken}`;
-      }
-
-      const response = await axios.get(url);
-      newPlaces.push(...response.data.results);
-
-      if (response.data.next_page_token) {
-        // Add a delay before setting the next page token
-        setTimeout(() => {
-          setNextPageToken(response.data.next_page_token);
-        }, 2000); // 2 seconds delay
-      } else {
-        setNextPageToken(null);
+    let response;
+    for (let i = 0; i < maxRetries; i++) {
+      try {
+        response = await axios.get(url);
+        break;
+      } catch (error) {
+        if (error.response && error.response.status === 429) {
+          // Rate limit hit, wait before retrying
+          await delay(Math.pow(2, i) * 1000);
+        } else {
+          throw error;
+        }
       }
     }
 
-    // Limit the number of new places to 12
-    newPlaces = newPlaces.slice(0, 12);
+    if (!response) {
+      throw new Error('Max retries reached');
+    }
+
+    let newPlaces = response.data.results.slice(0, 12);
 
     setPlaces(prevPlaces => [...prevPlaces, ...newPlaces]);
+
+    if (response.data.next_page_token) {
+      // Add a delay before setting the next page token
+      await delay(2000);
+      setNextPageToken(response.data.next_page_token);
+    } else {
+      setNextPageToken(null);
+    }
+
   } catch (error) {
     console.error('Error fetching places:', error);
   } finally {
     setLoading(false);
   }
 };
-  const loadMorePlaces = () => {
-    if (nextPageToken && !loading) {
-      fetchPlaces(location.coords.latitude, location.coords.longitude, nextPageToken);
-    }
-  };
+
+const loadMorePlaces = () => {
+  if (nextPageToken && !loading) {
+    fetchPlaces(location.coords.latitude, location.coords.longitude, nextPageToken);
+  }
+};
 
   const handleScheduleRide = () => {
     setIsScheduling(true);
