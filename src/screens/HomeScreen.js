@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { StatusBar } from 'expo-status-bar';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { colors } from '../styles/colors';
 import axios from 'axios';
@@ -29,6 +30,22 @@ const HomeScreen = ({ navigation }) => {
   const [nextPageToken, setNextPageToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isScheduling, setIsScheduling] = useState(false);
+  const [date, setDate] = useState(new Date());
+const [time, setTime] = useState(new Date());
+const [showDatePicker, setShowDatePicker] = useState(false);
+const [showTimePicker, setShowTimePicker] = useState(false);
+
+const onChangeDate = (event, selectedDate) => {
+  const currentDate = selectedDate || date;
+  setShowDatePicker(false);
+  setDate(currentDate);
+};
+
+const onChangeTime = (event, selectedTime) => {
+  const currentTime = selectedTime || time;
+  setShowTimePicker(false);
+  setTime(currentTime);
+};
 
   const animatedHeight = useRef(new Animated.Value(height * 0.15)).current;
 
@@ -158,9 +175,29 @@ const HomeScreen = ({ navigation }) => {
         {isScheduling ? (
           <>
             <Icon name="calendar-clock" size={24} color={colors.primary} style={styles.scheduleTitle}/>
-            <TextInput style={styles.input} placeholder="Date" placeholderTextColor="#fff" />
-            <TextInput style={styles.input} placeholder="Time" placeholderTextColor="#fff" />
-            <TextInput style={styles.input} placeholder="Pick-Up Location" placeholderTextColor="#fff" />
+          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.input}>
+  <Text style={{ color: '#fff' }}>{date.toDateString()}</Text>
+</TouchableOpacity>
+{showDatePicker && (
+  <DateTimePicker
+    value={date}
+    mode="date"
+    display="default"
+    onChange={onChangeDate}
+  />
+)}
+
+<TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.input}>
+  <Text style={{ color: '#fff' }}>{time.toLocaleTimeString()}</Text>
+</TouchableOpacity>
+{showTimePicker && (
+  <DateTimePicker
+    value={time}
+    mode="time"
+    display="default"
+    onChange={onChangeTime}
+  />
+)}
             <TextInput style={styles.input} placeholder="Drop-Off Location" placeholderTextColor="#fff" />
             <TouchableOpacity style={styles.scheduleButton}>
               <Text style={styles.scheduleButtonText}>Schedule</Text>
