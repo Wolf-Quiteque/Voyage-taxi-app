@@ -62,7 +62,7 @@ useEffect(() => {
   const animatedHeight = useRef(new Animated.Value(height * 0.15)).current;
   
   const handleSetLocation = () => {
-  navigation.navigate('MapScreen');
+  navigation.navigate('Map');
 };
 
   useEffect(() => {
