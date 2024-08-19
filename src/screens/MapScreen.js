@@ -87,7 +87,7 @@ const MapScreen = ({ navigation }) => {
           handleLocationSelect(details, false);
         }}
         query={{
-          key: GOOGLE_PLACES_API_KEY
+          key: GOOGLE_PLACES_API_KEY,
           language: 'en',
         }}
         styles={[styles.autocomplete, { top: 110 }]}
