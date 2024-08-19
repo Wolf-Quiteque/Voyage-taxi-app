@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
   Dimensions,
   SafeAreaView,
   ActivityIndicator,
+  Animated,
+  TextInput,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { StatusBar } from 'expo-status-bar';
@@ -18,7 +20,6 @@ import axios from 'axios';
 import * as Location from 'expo-location';
 const GOOGLE_PLACES_API_KEY = "AIzaSyAbKqp4cMvQO-8uDtqC7KoYslkB4uB3dLs"
 
-
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width / 2 - 30;
 
@@ -27,6 +28,9 @@ const HomeScreen = ({ navigation }) => {
   const [location, setLocation] = useState(null);
   const [nextPageToken, setNextPageToken] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isScheduling, setIsScheduling] = useState(false);
+
+  const animatedHeight = useRef(new Animated.Value(height * 0.15)).current;
 
   useEffect(() => {
     (async () => {
@@ -81,6 +85,25 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  const handleScheduleRide = () => {
+    setIsScheduling(true);
+    Animated.timing(animatedHeight, {
+      toValue: height * 0.7, // Adjust the height as needed
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handleCancelSchedule = () => {
+    Animated.timing(animatedHeight, {
+      toValue: height * 0.15,
+      duration: 500,
+      useNativeDriver: false,
+    }).start(() => {
+      setIsScheduling(false);
+    });
+  };
+
   const renderPlaceCard = ({ item }) => (
     <TouchableOpacity style={styles.card}>
       {item.photos && item.photos.length > 0 ? (
@@ -132,21 +155,37 @@ const HomeScreen = ({ navigation }) => {
         ListFooterComponent={renderFooter}
       />
 
-      <BlurView intensity={80} tint="light" style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navButton}>
-          <Icon name="calendar-clock" size={24} color={colors.primary} />
-          <Text style={styles.navButtonText}>Schedule Ride</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.navButton, styles.primaryButton]}>
-          <Icon name="car" size={24} color={colors.background} />
-          <Text style={[styles.navButtonText, styles.primaryButtonText]}>Voyage Now</Text>
-        </TouchableOpacity>
-      </BlurView>
+      <Animated.View style={[styles.bottomNav, { height: animatedHeight }]}>
+        {isScheduling ? (
+          <>
+            <Text style={styles.scheduleTitle}>Schedule Ride</Text>
+            <TextInput style={styles.input} placeholder="Date" placeholderTextColor="#fff" />
+            <TextInput style={styles.input} placeholder="Time" placeholderTextColor="#fff" />
+            <TextInput style={styles.input} placeholder="Pick-Up Location" placeholderTextColor="#fff" />
+            <TextInput style={styles.input} placeholder="Drop-Off Location" placeholderTextColor="#fff" />
+            <TouchableOpacity style={styles.scheduleButton}>
+              <Text style={styles.scheduleButtonText}>Schedule</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleCancelSchedule} style={styles.cancelButton}>
+              <Icon name="close" size={24} color="#fff" />
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <TouchableOpacity style={styles.navButton} onPress={handleScheduleRide}>
+              <Icon name="calendar-clock" size={24} color={colors.primary} />
+              <Text style={styles.navButtonText}>Schedule Ride</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.navButton, styles.primaryButton]}>
+              <Icon name="car" size={24} color={colors.background} />
+              <Text style={[styles.navButtonText, styles.primaryButtonText]}>Voyage Now</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </Animated.View>
     </SafeAreaView>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -214,35 +253,72 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: height * 0.15,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 20,
-    backgroundColor: 'rgba(200, 200, 200, 0.8)', // Light grey color
+    backgroundColor: 'black',
   },
   navButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10,
-    borderRadius: 10,
-    width: '40%',
-  },
-  primaryButton: {
-    backgroundColor: colors.primary,
-  },
-  navButtonText: {
-    color: colors.primary,
-    marginTop: 5,
-    fontWeight: 'bold',
-  },
-  primaryButtonText: {
-    color: colors.background,
-  },
-    loadingFooter: {
-    paddingVertical: 20,
-    alignItems: 'center',
-  },
-});
-
-export default HomeScreen;
+    padding: 15,
+      width: '90%',
+      marginVertical: 10,
+      borderRadius: 50,
+      backgroundColor: '#fff',
+      flexDirection: 'row',
+    },
+    navButtonText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginLeft: 10,
+        color: colors.text,
+      },
+      primaryButton: {
+        backgroundColor: colors.primary,
+      },
+      primaryButtonText: {
+        color: '#fff',
+      },
+      scheduleTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#fff',
+        marginBottom: 20,
+      },
+      input: {
+        width: '90%',
+        padding: 15,
+        borderRadius: 10,
+        backgroundColor: '#333',
+        marginVertical: 10,
+        color: '#fff',
+      },
+      scheduleButton: {
+        width: '90%',
+        padding: 15,
+        borderRadius: 10,
+        backgroundColor: colors.primary,
+        alignItems: 'center',
+        marginVertical: 10,
+      },
+      scheduleButtonText: {
+        fontSize: 18,
+        color: '#fff',
+        fontWeight: 'bold',
+      },
+      cancelButton: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        padding: 10,
+      },
+      loadingFooter: {
+        paddingVertical: 20,
+        borderTopWidth: 1,
+        borderColor: '#CED0CE',
+      },
+    });
+    
+    export default HomeScreen;
