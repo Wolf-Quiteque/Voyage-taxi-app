@@ -51,7 +51,7 @@ const onChangeTime = (event, selectedTime) => {
   const animatedHeight = useRef(new Animated.Value(height * 0.15)).current;
   
   const handleSetLocation = () => {
-  navigation.navigate('MapS');
+  navigation.navigate('Map');
 };
 
   useEffect(() => {

@@ -18,8 +18,7 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
            <Stack.Screen name="Login" component={LoginScreen}  />
-            <Stack.Screen name="Map" component={MapScreen}  />
-           
+          
       </Stack.Navigator>
       <Toast />
     </NavigationContainer>
