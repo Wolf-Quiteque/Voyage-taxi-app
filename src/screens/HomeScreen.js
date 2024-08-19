@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 20,
-    backgroundColor: 'black',
+    backgroundColor: 'rgba(200, 200, 200, 0.8)',
   },
   navButton: {
     alignItems: 'center',
