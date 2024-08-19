@@ -8,6 +8,7 @@ import {
   Image,
   Dimensions,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { StatusBar } from 'expo-status-bar';
@@ -16,7 +17,9 @@ import { colors } from '../styles/colors';
 import axios from 'axios';
 import * as Location from 'expo-location';
 
+
 const GOOGLE_PLACES_API_KEY = "AIzaSyAbKqp4cMvQO-8uDtqC7KoYslkB4uB3dLs"
+
 
 const { width, height } = Dimensions.get('window');
 const CARD_WIDTH = width / 2 - 30;
@@ -24,6 +27,8 @@ const CARD_WIDTH = width / 2 - 30;
 const HomeScreen = ({ navigation }) => {
   const [places, setPlaces] = useState([]);
   const [location, setLocation] = useState(null);
+  const [nextPageToken, setNextPageToken] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -39,21 +44,42 @@ const HomeScreen = ({ navigation }) => {
     })();
   }, []);
 
-  const fetchPlaces = async (latitude, longitude) => {
+  const fetchPlaces = async (latitude, longitude, pageToken = null) => {
+    if (loading) return;
+    setLoading(true);
+
     try {
       const types = ['restaurant', 'lodging', 'shopping_mall'];
-      const allPlaces = [];
+      let newPlaces = [];
 
       for (const type of types) {
-        const response = await axios.get(
-          `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=${type}&key=${GOOGLE_PLACES_API_KEY}`
-        );
-        allPlaces.push(...response.data.results.slice(0, 2));
+        let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=${type}&key=${GOOGLE_PLACES_API_KEY}`;
+        
+        if (pageToken) {
+          url += `&pagetoken=${pageToken}`;
+        }
+
+        const response = await axios.get(url);
+        newPlaces.push(...response.data.results);
+
+        if (response.data.next_page_token) {
+          setNextPageToken(response.data.next_page_token);
+        } else {
+          setNextPageToken(null);
+        }
       }
 
-      setPlaces(allPlaces);
+      setPlaces(prevPlaces => [...prevPlaces, ...newPlaces]);
     } catch (error) {
       console.error('Error fetching places:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMorePlaces = () => {
+    if (nextPageToken && !loading) {
+      fetchPlaces(location.coords.latitude, location.coords.longitude, nextPageToken);
     }
   };
 
@@ -80,6 +106,15 @@ const HomeScreen = ({ navigation }) => {
     </TouchableOpacity>
   );
 
+  const renderFooter = () => {
+    if (!loading) return null;
+    return (
+      <View style={styles.loadingFooter}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
@@ -94,6 +129,9 @@ const HomeScreen = ({ navigation }) => {
         keyExtractor={(item) => item.place_id}
         numColumns={2}
         contentContainerStyle={styles.gridContainer}
+        onEndReached={loadMorePlaces}
+        onEndReachedThreshold={0.1}
+        ListFooterComponent={renderFooter}
       />
 
       <BlurView intensity={80} tint="light" style={styles.bottomNav}>
@@ -109,6 +147,8 @@ const HomeScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -200,6 +240,10 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: colors.background,
+  },
+    loadingFooter: {
+    paddingVertical: 20,
+    alignItems: 'center',
   },
 });
 
