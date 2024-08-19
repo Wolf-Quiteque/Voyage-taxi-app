@@ -174,7 +174,7 @@ const onChangeTime = (event, selectedTime) => {
       <Animated.View style={[styles.bottomNav, { height: animatedHeight }]}>
         {isScheduling ? (
           <>
-            <Icon name="calendar-clock" size={24} color={colors.primary} style={styles.scheduleTitle}/>
+           <Text style={styles.scheduleTitle}>Schedule Ride</Text>
           <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.input}>
   <Text style={{ color: '#fff' }}>{date.toDateString()}</Text>
 </TouchableOpacity>
@@ -188,7 +188,7 @@ const onChangeTime = (event, selectedTime) => {
 )}
 
 <TouchableOpacity onPress={() => setShowTimePicker(true)} style={styles.input}>
-  <Text style={{ color: '#000' }}>{time.toLocaleTimeString()}</Text>
+  <Text style={{ color: '#fff' }}>{time.toLocaleTimeString()}</Text>
 </TouchableOpacity>
 {showTimePicker && (
   <DateTimePicker
