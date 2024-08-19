@@ -63,41 +63,44 @@ const onChangeTime = (event, selectedTime) => {
     })();
   }, []);
 
-  const fetchPlaces = async (latitude, longitude, pageToken = null) => {
-    if (loading) return;
-    setLoading(true);
-  
-    try {
-      const types = ['restaurant', 'lodging', 'shopping_mall'];
-      let newPlaces = [];
-  
-      for (const type of types) {
-        let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=${type}&key=${GOOGLE_PLACES_API_KEY}`;
-  
-        if (pageToken) {
-          url += `&pagetoken=${pageToken}`;
-        }
-  
-        const response = await axios.get(url);
-        newPlaces.push(...response.data.results);
-  
-        if (response.data.next_page_token) {
-          setNextPageToken(response.data.next_page_token);
-        } else {
-          setNextPageToken(null);
-        }
+const fetchPlaces = async (latitude, longitude, pageToken = null) => {
+  if (loading) return;
+  setLoading(true);
+
+  try {
+    const types = ['restaurant', 'lodging', 'shopping_mall'];
+    let newPlaces = [];
+
+    for (const type of types) {
+      let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=${type}&key=${GOOGLE_PLACES_API_KEY}`;
+
+      if (pageToken) {
+        url += `&pagetoken=${pageToken}`;
       }
-  
-      // Limit the number of new places to 12
-      newPlaces = newPlaces.slice(0, 12);
-  
-      setPlaces(prevPlaces => [...prevPlaces, ...newPlaces]);
-    } catch (error) {
-      console.error('Error fetching places:', error);
-    } finally {
-      setLoading(false);
+
+      const response = await axios.get(url);
+      newPlaces.push(...response.data.results);
+
+      if (response.data.next_page_token) {
+        // Add a delay before setting the next page token
+        setTimeout(() => {
+          setNextPageToken(response.data.next_page_token);
+        }, 2000); // 2 seconds delay
+      } else {
+        setNextPageToken(null);
+      }
     }
-  };
+
+    // Limit the number of new places to 12
+    newPlaces = newPlaces.slice(0, 12);
+
+    setPlaces(prevPlaces => [...prevPlaces, ...newPlaces]);
+  } catch (error) {
+    console.error('Error fetching places:', error);
+  } finally {
+    setLoading(false);
+  }
+};
   const loadMorePlaces = () => {
     if (nextPageToken && !loading) {
       fetchPlaces(location.coords.latitude, location.coords.longitude, nextPageToken);
