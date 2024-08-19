@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingBottom: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Light grey color
+    backgroundColor: 'rgba(200, 200, 200, 0.8)', // Light grey color
   },
   navButton: {
     alignItems: 'center',
