@@ -10,7 +10,6 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Animated,
-  Alert,
   TextInput,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
@@ -55,9 +54,7 @@ const onChangeTime = (event, selectedTime) => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         console.error('Permission to access location was denied');
-        
         return;
-        
       }
 
       let location = await Location.getCurrentPositionAsync({});
@@ -66,65 +63,44 @@ const onChangeTime = (event, selectedTime) => {
     })();
   }, []);
 
-const fetchPlaces = async (latitude, longitude, pageToken = null) => {
-  if (loading) return;const fetchPlaces = async (latitude, longitude, pageToken = null) => {
-  if (loading) return;
-  setLoading(true);
+  const fetchPlaces = async (latitude, longitude, pageToken = null) => {
+    if (loading) return;
+    setLoading(true);
 
-  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-  const maxRetries = 3;
+    try {
+      const types = ['restaurant', 'lodging', 'shopping_mall'];
+      let newPlaces = [];
 
-  try {
-    const types = ['restaurant', 'lodging', 'shopping_mall'].join('|');
-    let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=${types}&key=${GOOGLE_PLACES_API_KEY}`;
+      for (const type of types) {
+        let url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=1500&type=${type}&key=${GOOGLE_PLACES_API_KEY}`;
+        
+        if (pageToken) {
+          url += `&pagetoken=${pageToken}`;
+        }
 
-    if (pageToken) {
-      url += `&pagetoken=${pageToken}`;
-    }
+        const response = await axios.get(url);
+        newPlaces.push(...response.data.results);
 
-    let response;
-    for (let i = 0; i < maxRetries; i++) {
-      try {
-        response = await axios.get(url);
-        break;
-      } catch (error) {
-        if (error.response && error.response.status === 429) {
-          // Rate limit hit, wait before retrying
-          await delay(Math.pow(2, i) * 1000);
+        if (response.data.next_page_token) {
+          setNextPageToken(response.data.next_page_token);
         } else {
-          throw error;
+          setNextPageToken(null);
         }
       }
+
+      setPlaces(prevPlaces => [...prevPlaces, ...newPlaces]);
+    } catch (error) {
+      console.error('Error fetching places:', error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    if (!response) {
-      throw new Error('Max retries reached');
+  const loadMorePlaces = () => {
+    if (nextPageToken && !loading) {
+      fetchPlaces(location.coords.latitude, location.coords.longitude, nextPageToken);
     }
-
-    let newPlaces = response.data.results.slice(0, 12);
-
-    setPlaces(prevPlaces => [...prevPlaces, ...newPlaces]);
-
-    if (response.data.next_page_token) {
-      // Add a delay before setting the next page token
-      await delay(2000);
-      setNextPageToken(response.data.next_page_token);
-    } else {
-      setNextPageToken(null);
-    }
-
-  } catch (error) {
-    console.error('Error fetching places:', error);
-  } finally {
-    setLoading(false);
-  }
-};
-}
-const loadMorePlaces = () => {
-  if (nextPageToken && !loading) {
-    fetchPlaces(location.coords.latitude, location.coords.longitude, nextPageToken);
-  }
-};
+  };
 
   const handleScheduleRide = () => {
     setIsScheduling(true);
