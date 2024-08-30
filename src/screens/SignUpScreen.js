@@ -52,6 +52,8 @@ const SignUpScreen = ({navigation}) => {
        text1: 'Registration Complete',
        text2: 'Conta criado com sucesso '
      });
+     
+      navigation.navigate('Home')
     } else {
       setLoading(false)
   Toast.show({

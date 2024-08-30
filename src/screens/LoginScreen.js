@@ -90,6 +90,7 @@ const LoginScreen = ({ navigation }) => {
               title="Log In"
               onPress={handleLogin}
               style={styles.loginButton}
+                onPress={() => navigation.navigate('Home')}
             />
 
             <TouchableOpacity 
